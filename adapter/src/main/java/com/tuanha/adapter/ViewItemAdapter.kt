@@ -11,15 +11,13 @@ import com.tuanha.adapter.entities.ViewItem
 import java.lang.reflect.ParameterizedType
 
 @Suppress("UNCHECKED_CAST")
-abstract class ViewItemAdapter<VI : ViewItem, VB : ViewBinding>(
-    private val onItemClick: ((View, VI) -> Unit)? = null
-) {
+abstract class ViewItemAdapter<out VI : ViewItem, out VB : ViewBinding>(private val onItemClick: ((View, VI) -> Unit)? = null) {
 
 
     open var adapter: BaseAsyncAdapter<*, *>? = null
 
 
-    open val viewItemClass: Class<VI> by lazy {
+    open val viewItemClass: Class<@UnsafeVariance VI> by lazy {
         findGenericTypeAssignableTo(this::class.java, ViewItem::class.java) ?: throw IllegalStateException("Cannot determine ViewItem class")
     }
 

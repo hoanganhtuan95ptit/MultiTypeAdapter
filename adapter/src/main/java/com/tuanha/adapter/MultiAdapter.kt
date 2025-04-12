@@ -1,6 +1,5 @@
 package com.tuanha.adapter
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding

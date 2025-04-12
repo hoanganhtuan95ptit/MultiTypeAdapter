@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tuanha.adapter.MultiAdapter
 import com.tuanha.adapter.entities.ViewItem
 import com.tuanha.adapter.utils.exts.submitListAwait
 import com.tuanha.app.databinding.ActivityMainBinding
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 else list.add(Test2ViewItem(id = "$i", text = "index: $i"))
             }
 
+            binding.recyclerView.adapter = MultiAdapter()
             binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
             binding.recyclerView.submitListAwait(list)
         }
