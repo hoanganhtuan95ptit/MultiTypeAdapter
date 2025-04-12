@@ -1,37 +1,37 @@
-## MultiTypeAdapter - Android Library
+# MultiTypeAdapter - Android Library 🚀
 
-MultiTypeAdapter là thư viện Android giúp đơn giản hóa việc xử lý RecyclerView với nhiều loại item khác nhau, giảm thiểu mã nguồn boilerplate và giúp tối ưu hiệu suất khi làm việc với các danh sách phức tạp.
+**MultiTypeAdapter** is an Android library that simplifies handling **RecyclerView** with multiple item types, reduces boilerplate code, and optimizes performance when working with complex lists. 🎉
 
-## Tính Năng
-Tự động phân biệt các loại item trong RecyclerView mà không cần phải viết nhiều logic getItemViewType().
+## Features ✨
 
-Hỗ trợ nhiều kiểu item khác nhau trong một RecyclerView.
+- **Automatically differentiate item types** in RecyclerView without writing complex `getItemViewType()` logic 🔄.
+- **Support for multiple item types** in a single RecyclerView 📑.
+- **Optimized RecyclerView updates**: Only update changed items, improving performance ⚡.
+- **Easy to use**: No need to rewrite code for each item type 👨‍💻.
+- **Supports DiffUtil**: Automatically compares and updates changes in the list 🔍.
 
-Cập nhật RecyclerView tối ưu: Chỉ cập nhật các phần tử thay đổi, giúp tăng hiệu suất.
+## Installation ⚙️
 
-Dễ dàng sử dụng: Không cần viết lại nhiều code cho từng kiểu item riêng biệt.
+Add the dependency to your project's `build.gradle` file:
 
-Hỗ trợ DiffUtil: Tự động so sánh và cập nhật những phần thay đổi trong danh sách.
-
-## Cài Đặt
-Thêm phụ thuộc vào file build.gradle của dự án:
-
-1. Thêm vào build.gradle của dự án
-```java
-   dependencies {
-   implementation 'com.example:multitypeadapter:1.0.0'
-   }
+### 1. Add to your project's `build.gradle`
+```gradle
+dependencies {
+    implementation 'com.example:multitypeadapter:1.0.0'
+}
 ```
-2. Thêm vào build.gradle của module ứng dụng
-```java
-   dependencies {
-   implementation 'com.example:multitypeadapter:1.0.0'
-   annotationProcessor 'com.example:multitypeadapter-processor:1.0.0'
-   }
-   ```
-## Hướng Dẫn Sử Dụng
-1. Tạo item adapter
-``` java
+### 2. Add to your module's `build.gradle`
+```gradle
+dependencies {
+    implementation 'com.example:multitypeadapter:1.0.0' 
+    annotationProcessor 'com.example:multitypeadapter-processor:1.0.0'
+}
+```
+
+## Usage Guide 📚
+
+### 1. Create an Item Adapter
+``` kotlin
 @ItemAdapter
 class TestAdapter : ViewItemAdapter<TestViewItem, ItemTestBinding>() {
 
@@ -68,37 +68,39 @@ data class TestViewItem(
 
 private const val PAYLOAD_TEXT = "TEXT"
 ```
-2. Sử dụng cơ bản
-```java
+### 2. Basic Usage
+```kotlin
 
-val list = arrayListOf<ViewItem>()
-
-            for (i in 0..10) {
-        if (i % 2 == 0) list.add(TestViewItem(id = "$i", text = "index: $i"))
-        else list.add(Test2ViewItem(id = "$i", text = "index: $i"))
-        }
-
-binding.recyclerView.adapter = MultiAdapter()
-binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-            binding.recyclerView.submitListAwait(list)
-```
-3. Sử dụng nâng cao
-```java
 val list = arrayListOf<ViewItem>()
 
 for (i in 0..10) {
-        if (i % 2 == 0) list.add(TestViewItem(id = "$i", text = "index: $i"))
-        else list.add(Test2ViewItem(id = "$i", text = "index: $i"))
-        }
+    if (i % 2 == 0) list.add(TestViewItem(id = "$i", text = "index: $i"))
+    else list.add(Test2ViewItem(id = "$i", text = "index: $i"))
+}
+
+binding.recyclerView.adapter = MultiAdapter()
+binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+binding.recyclerView.submitListAwait(list)
+```
+### 3. Advanced Usage
+
+Support for adapters that accept click events through the constructor.
+```kotlin
+val list = arrayListOf<ViewItem>()
+
+for (i in 0..10) {
+    if (i % 2 == 0) list.add(TestViewItem(id = "$i", text = "index: $i"))
+    else list.add(Test2ViewItem(id = "$i", text = "index: $i"))
+}
 
 // Khởi tạo adapter với sự kiện click và long click
 val advancedAdapter = AdvancedAdapter(
-        onItemClick = { testViewItem ->
-                Toast.makeText(this, "Item clicked: ${testViewItem.text}", Toast.LENGTH_SHORT).show()
-        },
-        onItemLongClick = { testViewItem ->
-                Toast.makeText(this, "Item long clicked: ${testViewItem.text}", Toast.LENGTH_SHORT).show()
-        }
+    onItemClick = { testViewItem ->
+        Toast.makeText(this, "Item clicked: ${testViewItem.text}", Toast.LENGTH_SHORT).show() 
+    },
+    onItemLongClick = { testViewItem ->
+        Toast.makeText(this, "Item long clicked: ${testViewItem.text}", Toast.LENGTH_SHORT).show()
+    }
 )
 
 binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
