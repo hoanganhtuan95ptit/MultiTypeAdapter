@@ -17,14 +17,8 @@ Add the dependency to your project's `build.gradle` file:
 ### 1. Add to your project's `build.gradle`
 ```gradle
 dependencies {
-    implementation 'com.example:multitypeadapter:1.0.0'
-}
-```
-### 2. Add to your module's `build.gradle`
-```gradle
-dependencies {
-    implementation 'com.example:multitypeadapter:1.0.0' 
-    annotationProcessor 'com.example:multitypeadapter-processor:1.0.0'
+    implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:1.0.3' 
+    annotationProcessor 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:1.0.3'
 }
 ```
 
