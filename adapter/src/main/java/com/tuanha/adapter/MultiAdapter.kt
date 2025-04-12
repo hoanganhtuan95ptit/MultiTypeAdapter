@@ -1,5 +1,6 @@
 package com.tuanha.adapter
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -85,7 +86,7 @@ class MultiAdapter(
 
     override fun createViewBinding(parent: ViewGroup, viewType: Int): ViewBinding {
 
-        return typeAndAdapter[viewType]!!.createViewItem(parent, viewType)
+        return typeAndAdapter[viewType]!!.createViewBinding(parent, viewType)
     }
 
     override fun onViewAttachedToWindow(holder: BaseBindingViewHolder<ViewBinding>) {

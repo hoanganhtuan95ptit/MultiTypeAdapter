@@ -34,7 +34,7 @@ suspend fun RecyclerView.submitListAwait(viewItemList: List<ViewItem>) = channel
     awaitClose {
 
     }
-}
+}.first()
 
 suspend fun RecyclerView.submitListAwait(viewItemList: List<ViewItem>, isTransitionAwait: Boolean = false) {
 

@@ -24,7 +24,7 @@ abstract class ViewItemAdapter<VI : ViewItem, VB : ViewBinding>(
     }
 
 
-    open fun createViewItem(parent: ViewGroup, viewType: Int): VB {
+    open fun createViewBinding(parent: ViewGroup, viewType: Int): VB {
 
         val viewBindingClass: Class<VB> = findGenericTypeAssignableTo(this::class.java, ViewBinding::class.java) ?: throw IllegalStateException("Cannot determine ViewBinding class")
 
@@ -34,7 +34,7 @@ abstract class ViewItemAdapter<VI : ViewItem, VB : ViewBinding>(
 
     open fun createViewHolder(parent: ViewGroup, viewType: Int): BaseBindingViewHolder<@UnsafeVariance VB>? {
 
-        val viewHolder = BaseBindingViewHolder(createViewItem(parent, viewType), viewType)
+        val viewHolder = BaseBindingViewHolder(createViewBinding(parent, viewType), viewType)
 
         val binding = viewHolder.binding
 

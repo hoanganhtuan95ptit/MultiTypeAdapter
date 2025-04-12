@@ -7,8 +7,9 @@
     android:fitsSystemWindows="true"
     tools:context="com.tuanha.dapter.MainActivity">
 
-<!--    <com.tuanha.adapter.MultiRecyclerView-->
-<!--        android:id="@+id/recycler_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent" />-->
+    <com.tuanha.adapter.MultiRecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:background="#5b5b"
+        android:layout_height="match_parent" />
 </FrameLayout>
