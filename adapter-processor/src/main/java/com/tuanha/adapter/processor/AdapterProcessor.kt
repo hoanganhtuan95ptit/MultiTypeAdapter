@@ -1,3 +1,22 @@
+package com.tuanha.adapter.processor
+
+import com.google.auto.service.AutoService
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
+import java.io.File
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.ProcessingEnvironment
+import javax.annotation.processing.Processor
+import javax.annotation.processing.RoundEnvironment
+import javax.annotation.processing.SupportedSourceVersion
+import javax.lang.model.SourceVersion
+import javax.lang.model.element.TypeElement
+import javax.tools.StandardLocation
 
 @Suppress("unused")
 @AutoService(Processor::class)
