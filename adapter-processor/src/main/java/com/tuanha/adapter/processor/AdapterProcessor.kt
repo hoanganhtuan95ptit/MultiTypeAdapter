@@ -1,106 +1,136 @@
-package com.tuanha.adapter.processor
 
-import com.google.auto.service.AutoService
-import com.squareup.javapoet.AnnotationSpec
-import com.squareup.javapoet.ClassName
-import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.ParameterizedTypeName
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
-import com.tuanha.adapter.annotation.ItemAdapter
-import java.io.IOException
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.Filer
-import javax.annotation.processing.Messager
-import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.Processor
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedSourceVersion
-import javax.lang.model.SourceVersion
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.Modifier
-import javax.lang.model.element.TypeElement
-import javax.lang.model.util.Elements
-import javax.tools.Diagnostic
-
+@Suppress("unused")
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class AdapterProcessor : AbstractProcessor() {
 
-    private var filer: Filer? = null
-    private var messager: Messager? = null
-    private var elements: Elements? = null
-    private var classList: MutableList<ClassName>? = null
+    private val annotationName = "com.tuanha.adapter.annotation.ItemAdapter"
 
-    @Synchronized
-    override fun init(processingEnvironment: ProcessingEnvironment) {
-        this.filer = processingEnvironment.filer
-        this.messager = processingEnvironment.messager
-        this.elements = processingEnvironment.elementUtils
-        this.classList = ArrayList()
-    }
-
-    override fun process(set: Set<TypeElement?>, roundEnvironment: RoundEnvironment): Boolean {
-
-        val elementList = roundEnvironment.getElementsAnnotatedWith(ItemAdapter::class.java)
-
-        for (element in elementList) {
-
-            if (element.kind != ElementKind.CLASS) {
-                messager!!.printMessage(Diagnostic.Kind.ERROR, "@ItemAdapter should be on top of classes")
-                return false
-            }
-
-            val className = ClassName.get(elements!!.getPackageOf(element).qualifiedName.toString(), element.simpleName.toString())
-
-            classList!!.add(className)
-        }
+    private val adapterProviderClassName = ClassName("com.tuanha.adapter.provider", "AdapterProvider")
 
 
-        val list = ClassName.get("java.util", "List")
-        val arrayList = ClassName.get("java.util", "ArrayList")
+    private var classInfoList: MutableList<ClassInfo> = mutableListOf()
 
-        val navigationDeepLink = ClassName.get("java.lang", "Object")
-        val listOfNavigationDeepLink: TypeName = ParameterizedTypeName.get(list, navigationDeepLink)
-
-        var builder = MethodSpec.methodBuilder("all")
-            .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-            .returns(listOfNavigationDeepLink)
-            .addStatement("\$T result = new \$T<>()", listOfNavigationDeepLink, arrayList)
-
-        for (className in classList!!) {
-            builder = builder.addStatement("result.add(new \$T())", className)
-        }
-
-
-        val startMethod = builder.addStatement("return result")
-            .build()
-
-        val keepAnnotation = AnnotationSpec.builder(ClassName.get("androidx.annotation", "Keep"))
-            .build()
-
-
-        val generatedClass = TypeSpec
-            .classBuilder("AdapterProvider")
-            .addModifiers(Modifier.PUBLIC)
-            .addAnnotation(keepAnnotation)
-            .addMethod(startMethod)
-            .build()
-
-        try {
-            JavaFile.builder("com.tuanha.adapter", generatedClass).build().writeTo(filer)
-        } catch (_: IOException) {
-        }
-
-        return true
-    }
 
     override fun getSupportedAnnotationTypes(): Set<String> {
-        return setOf(ItemAdapter::class.java.canonicalName)
+        return setOf(annotationName)
     }
 
     override fun getSupportedSourceVersion(): SourceVersion {
         return SourceVersion.latestSupported()
     }
+
+    override fun process(set: Set<TypeElement?>, roundEnvironment: RoundEnvironment): Boolean {
+
+        if (processingEnv == null) {
+            return false
+        }
+
+        val elements = roundEnvironment.getElementsAnnotatedWith(
+            processingEnv.elementUtils.getTypeElement(annotationName)
+        )
+
+        for (element in elements) {
+
+            val className = element.simpleName.toString()
+            val packageName = processingEnv.elementUtils.getPackageOf(element).qualifiedName.toString()
+
+            classInfoList.add(ClassInfo(className = className, packageName = packageName))
+        }
+
+        if (elements.isNotEmpty()) {
+            return true
+        }
+
+        if (classInfoList.isEmpty()) {
+            return true
+        }
+
+        return generateAdapterProvider(classInfoList = classInfoList, processingEnv = processingEnv)
+    }
+
+    private fun generateAdapterProvider(classInfoList: List<ClassInfo>, processingEnv: ProcessingEnvironment): Boolean {
+
+        val kaptDir = processingEnv.options["kapt.kotlin.generated"] ?: return false
+        val packageName = findCommonPackageName(classInfoList)
+        val adapterProviderFile = createAdapterProviderFile(classInfoList, packageName)
+
+        adapterProviderFile.writeTo(File(kaptDir))
+        writeMetaInfServiceFile(processingEnv, packageName)
+
+        return true
+    }
+
+    private fun findCommonPackageName(classInfoList: List<ClassInfo>): String {
+
+        val packages = classInfoList.map { it.packageName }.toSet()
+        return packages.reduce { acc, pkg ->
+            acc.commonPrefixWith(pkg).substringBeforeLast('.')
+        }
+    }
+
+    private fun createAdapterProviderFile(classInfoList: List<ClassInfo>, packageName: String): FileSpec {
+
+        val providerFunction = buildProviderFunction(classInfoList)
+
+        val adapterProviderClass = buildAdapterProviderClass(providerFunction)
+
+        return FileSpec.builder(packageName, "AdapterProvider")
+            .addType(adapterProviderClass)
+            .build()
+    }
+
+    private fun buildProviderFunction(classInfoList: List<ClassInfo>): FunSpec {
+
+        val viewItemClass = ClassName("kotlin", "Any")
+        val listOfViewItemClass = ClassName("kotlin.collections", "List").parameterizedBy(viewItemClass)
+
+        val functionBuilder = FunSpec.builder("provider")
+            .addModifiers(KModifier.OVERRIDE, KModifier.PUBLIC)
+            .returns(listOfViewItemClass)
+            .addStatement("val result = mutableListOf<%T>()", viewItemClass)
+
+        classInfoList.forEach {
+            val className = ClassName(it.packageName, it.className)
+            functionBuilder.addStatement("result.add(%T())", className)
+        }
+
+        functionBuilder.addStatement("return result")
+
+        return functionBuilder.build()
+    }
+
+    private fun buildAdapterProviderClass(providerFunction: FunSpec): TypeSpec {
+
+        val keepAnnotation = AnnotationSpec.builder(ClassName("androidx.annotation", "Keep")).build()
+        val autoServiceAnnotation = AnnotationSpec.builder(ClassName("com.google.auto.service", "AutoService"))
+            .addMember("%T::class", adapterProviderClassName)
+            .build()
+
+        return TypeSpec.classBuilder(adapterProviderClassName.simpleName)
+            .superclass(adapterProviderClassName)
+            .addAnnotation(keepAnnotation)
+            .addAnnotation(autoServiceAnnotation)
+            .addModifiers(KModifier.PUBLIC)
+            .addFunction(providerFunction)
+            .build()
+    }
+
+    private fun writeMetaInfServiceFile(processingEnv: ProcessingEnvironment, packageName: String) {
+
+        val providerClassName = adapterProviderClassName.canonicalName
+        val resource = processingEnv.filer.createResource(
+            StandardLocation.CLASS_OUTPUT,
+            "",
+            "META-INF/services/$providerClassName"
+        )
+        resource.openWriter().use { writer ->
+            writer.write("$packageName.AdapterProvider\n")
+        }
+    }
+
+    data class ClassInfo(
+        val className: String,
+        val packageName: String,
+    )
 }
