@@ -10,6 +10,10 @@ import com.tuanha.adapter.base.BaseBindingViewHolder
 import com.tuanha.adapter.entities.ViewItem
 import java.lang.reflect.ParameterizedType
 
+private val viewItemClassMap = hashMapOf<Class<ViewItemAdapter<*, *>>, Class<ViewItem>>()
+
+private val viewBindingClassMap = hashMapOf<Class<ViewItemAdapter<*, *>>, Class<ViewBinding>>()
+
 @Suppress("UNCHECKED_CAST")
 abstract class ViewItemAdapter<out VI : ViewItem, out VB : ViewBinding>(private val onItemClick: ((View, VI) -> Unit)? = null) {
 
@@ -18,17 +22,33 @@ abstract class ViewItemAdapter<out VI : ViewItem, out VB : ViewBinding>(private 
 
 
     open val viewItemClass: Class<@UnsafeVariance VI> by lazy {
-        findGenericTypeAssignableTo(this::class.java, ViewItem::class.java) ?: throw IllegalStateException("Cannot determine ViewItem class")
+
+        var itemClass = (viewItemClassMap[this@ViewItemAdapter.javaClass] as? Class<VI>)
+
+        itemClass = itemClass ?: findGenericTypeAssignableTo<VI>(this::class.java, ViewItem::class.java)?.apply {
+
+            viewItemClassMap[this@ViewItemAdapter.javaClass] = this as Class<ViewItem>
+        }
+
+        itemClass ?: throw IllegalStateException("Cannot determine ViewItem class")
     }
 
+    open val viewBindingClass: Class<@UnsafeVariance VB> by lazy {
 
+        var bindingClass = (viewBindingClassMap[this@ViewItemAdapter.javaClass] as? Class<VB>)
+
+        bindingClass = bindingClass ?: findGenericTypeAssignableTo<VB>(this::class.java, ViewBinding::class.java)?.apply {
+
+            viewBindingClassMap[this@ViewItemAdapter.javaClass] = this as Class<ViewBinding>
+        }
+
+        bindingClass ?: throw IllegalStateException("Cannot determine ViewItem class")
+    }
+    
     open fun createViewBinding(parent: ViewGroup, viewType: Int): VB {
-
-        val viewBindingClass: Class<VB> = findGenericTypeAssignableTo(this::class.java, ViewBinding::class.java) ?: throw IllegalStateException("Cannot determine ViewBinding class")
 
         return inflate(viewBindingClass, parent)
     }
-
 
     open fun createViewHolder(parent: ViewGroup, viewType: Int): BaseBindingViewHolder<@UnsafeVariance VB>? {
 

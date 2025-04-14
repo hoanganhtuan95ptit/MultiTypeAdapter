@@ -110,10 +110,6 @@ class MultiAdapter(
 
     private fun providerItemAdapter(): List<ViewItemAdapter<ViewItem, ViewBinding>> {
 
-        val className = "com.tuanha.adapter.AdapterProvider"
-        val clazz = Class.forName(className)
-
-        val method = clazz.getMethod("all")
-        return (method.invoke(null) as List<*>).filterIsInstance<ViewItemAdapter<ViewItem, ViewBinding>>()
+        return provider.flatMap { it.provider() }.filterIsInstance<ViewItemAdapter<ViewItem, ViewBinding>>()
     }
 }
