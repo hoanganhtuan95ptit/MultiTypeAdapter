@@ -24,15 +24,17 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:<last version>' 
-    kapt 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:<last version>'
+    implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:<Last version>' 
+    kapt 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:<Last version>'
 }
 ```
 
 ## Usage Guide 📚
 
 ### 1. Create an Item Adapter
+
 ``` kotlin
+
 @ItemAdapter
 class TestAdapter : ViewItemAdapter<TestViewItem, ItemTestBinding>() {
 
@@ -69,6 +71,7 @@ data class TestViewItem(
 
 private const val PAYLOAD_TEXT = "TEXT"
 ```
+
 ### 2. Basic Usage
 ```kotlin
 
@@ -87,6 +90,7 @@ binding.recyclerView.submitListAwait(list)
 
 Support for adapters that accept click events through the constructor.
 ```kotlin
+
 val list = arrayListOf<ViewItem>()
 
 for (i in 0..10) {
