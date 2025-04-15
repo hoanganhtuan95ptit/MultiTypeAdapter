@@ -18,7 +18,7 @@ Add the dependency to your project's `build.gradle` file:
 ```gradle
 dependencies {
     implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:1.0.3' 
-    annotationProcessor 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:1.0.3'
+    kapt 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:1.0.3'
 }
 ```
 
