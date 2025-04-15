@@ -15,6 +15,13 @@
 Add the dependency to your project's `build.gradle` file:
 
 ### 1. Add to your project's `build.gradle`
+
+```gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+```
+
 ```gradle
 dependencies {
     implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:1.0.3' 
