@@ -24,8 +24,8 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:1.0.3' 
-    kapt 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:1.0.3'
+    implementation 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter:<last version>' 
+    kapt 'com.github.hoanganhtuan95ptit.MultiTypeAdapter:adapter-processor:<last version>'
 }
 ```
 
