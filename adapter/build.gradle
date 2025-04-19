@@ -33,8 +33,9 @@ android {
 
 dependencies {
 
-    implementation androidxDependencies.recyclerview
-    implementation androidxDependencies.lifecycle_livedata
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+
     implementation coroutinesDependencies.values()
 
     api("com.google.auto.service:auto-service:1.0-rc4") {
