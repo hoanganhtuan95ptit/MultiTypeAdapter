@@ -5,7 +5,21 @@ plugins {
 
 apply from: "../dependencies.gradle"
 
+// Gộp cấu hình java tại đây
 java {
     sourceCompatibility = project.ext.javaVersion
     targetCompatibility = project.ext.javaVersion
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+kotlin {
+    jvmToolchain(8)
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
