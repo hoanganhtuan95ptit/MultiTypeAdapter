@@ -135,7 +135,7 @@ class AdapterProcessor : AbstractProcessor() {
             .build()
     }
 
-    private fun writeMetaInfServiceFile(processingEnv: ProcessingEnvironment, packageName: String) {
+    private fun writeMetaInfServiceFile(processingEnv: ProcessingEnvironment, packageName: String) = kotlin.runCatching {
 
         val providerClassName = adapterProviderClassName.canonicalName
         val resource = processingEnv.filer.createResource(
