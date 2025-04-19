@@ -1,6 +1,5 @@
 package com.tuanha.adapter
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,11 +7,6 @@ import androidx.viewbinding.ViewBinding
 import com.tuanha.adapter.base.BaseAsyncAdapter
 import com.tuanha.adapter.base.BaseBindingViewHolder
 import com.tuanha.adapter.entities.ViewItem
-import java.lang.reflect.ParameterizedType
-
-private val viewItemClassMap = hashMapOf<Class<ViewItemAdapter<*, *>>, Class<ViewItem>>()
-
-private val viewBindingClassMap = hashMapOf<Class<ViewItemAdapter<*, *>>, Class<ViewBinding>>()
 
 @Suppress("UNCHECKED_CAST")
 abstract class ViewItemAdapter<out VI : ViewItem, out VB : ViewBinding>(private val onItemClick: ((View, VI) -> Unit)? = null) {
@@ -21,34 +15,10 @@ abstract class ViewItemAdapter<out VI : ViewItem, out VB : ViewBinding>(private 
     open var adapter: BaseAsyncAdapter<*, *>? = null
 
 
-    open val viewItemClass: Class<@UnsafeVariance VI> by lazy {
+    abstract val viewItemClass: Class<@UnsafeVariance VI>
 
-        var itemClass = (viewItemClassMap[this@ViewItemAdapter.javaClass] as? Class<VI>)
+    abstract fun createViewBinding(parent: ViewGroup, viewType: Int): VB
 
-        itemClass = itemClass ?: findGenericTypeAssignableTo<VI>(this::class.java, ViewItem::class.java)?.apply {
-
-            viewItemClassMap[this@ViewItemAdapter.javaClass] = this as Class<ViewItem>
-        }
-
-        itemClass ?: throw IllegalStateException("Cannot determine ViewItem class")
-    }
-
-    open val viewBindingClass: Class<@UnsafeVariance VB> by lazy {
-
-        var bindingClass = (viewBindingClassMap[this@ViewItemAdapter.javaClass] as? Class<VB>)
-
-        bindingClass = bindingClass ?: findGenericTypeAssignableTo<VB>(this::class.java, ViewBinding::class.java)?.apply {
-
-            viewBindingClassMap[this@ViewItemAdapter.javaClass] = this as Class<ViewBinding>
-        }
-
-        bindingClass ?: throw IllegalStateException("Cannot determine ViewItem class")
-    }
-    
-    open fun createViewBinding(parent: ViewGroup, viewType: Int): VB {
-
-        return inflate(viewBindingClass, parent)
-    }
 
     open fun createViewHolder(parent: ViewGroup, viewType: Int): BaseBindingViewHolder<@UnsafeVariance VB>? {
 
@@ -85,48 +55,4 @@ abstract class ViewItemAdapter<out VI : ViewItem, out VB : ViewBinding>(private 
     }
 
     protected fun getViewItem(position: Int) = adapter?.currentList?.getOrNull(position) as? VI
-
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> findGenericTypeAssignableTo(startClass: Class<*>, targetSuperClass: Class<*>): Class<T>? {
-
-        var currentClass: Class<*>? = startClass
-
-        while (currentClass != null && currentClass != Any::class.java) {
-
-            val genericSuperclass = currentClass.genericSuperclass
-
-            if (genericSuperclass is ParameterizedType) {
-
-                val typeArguments = genericSuperclass.actualTypeArguments
-
-                for (type in typeArguments) if (type is Class<*> && targetSuperClass.isAssignableFrom(type)) {
-                    return type as Class<T>
-                }
-            }
-
-            currentClass = currentClass.superclass
-        }
-
-        return null
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <VB : ViewBinding> inflate(viewBindingClass: Class<VB>, parent: ViewGroup): VB {
-
-        val methods = viewBindingClass.declaredMethods
-
-        val inflateMethod = methods.firstOrNull { method ->
-            method.parameterTypes.contentEquals(
-                arrayOf(LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.javaPrimitiveType)
-            )
-        }
-
-        if (inflateMethod == null) {
-            throw NoSuchMethodException("No method matching the inflate signature found")
-        }
-
-        inflateMethod.isAccessible = true
-        return inflateMethod.invoke(null, LayoutInflater.from(parent.context), parent, false) as VB
-    }
 }

@@ -1,10 +1,12 @@
 # MultiTypeAdapter - Android Library 🚀
 
-**MultiTypeAdapter** is an Android library that simplifies handling **RecyclerView** with multiple item types, reduces boilerplate code, and optimizes performance when working with complex lists. 🎉
+**MultiTypeAdapter** is an Android library that simplifies handling **RecyclerView** with multiple
+item types, reduces boilerplate code, and optimizes performance when working with complex lists. 🎉
 
 ## Features ✨
 
-- **Automatically differentiate item types** in RecyclerView without writing complex `getItemViewType()` logic 🔄.
+- **Automatically differentiate item types** in RecyclerView without writing
+  complex `getItemViewType()` logic 🔄.
 - **Support for multiple item types** in a single RecyclerView 📑.
 - **Optimized RecyclerView updates**: Only update changed items, improving performance ⚡.
 - **Easy to use**: No need to rewrite code for each item type 👨‍💻.
@@ -73,6 +75,7 @@ private const val PAYLOAD_TEXT = "TEXT"
 ```
 
 ### 2. Basic Usage
+
 ```kotlin
 
 val list = arrayListOf<ViewItem>()
@@ -86,9 +89,11 @@ binding.recyclerView.adapter = MultiAdapter()
 binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 binding.recyclerView.submitListAwait(list)
 ```
+
 ### 3. Advanced Usage
 
 Support for adapters that accept click events through the constructor.
+
 ```kotlin
 
 val list = arrayListOf<ViewItem>()
