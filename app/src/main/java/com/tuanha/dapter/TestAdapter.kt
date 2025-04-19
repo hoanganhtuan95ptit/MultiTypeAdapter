@@ -1,12 +1,23 @@
 package com.tuanha.dapter
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.tuanha.adapter.ViewItemAdapter
 import com.tuanha.adapter.annotation.ItemAdapter
 import com.tuanha.adapter.entities.ViewItem
+import com.tuanha.app.databinding.ItemTest2Binding
 import com.tuanha.app.databinding.ItemTestBinding
 
 @ItemAdapter
 class TestAdapter : ViewItemAdapter<TestViewItem, ItemTestBinding>() {
+
+    override val viewItemClass: Class<TestViewItem> by lazy {
+        TestViewItem::class.java
+    }
+
+    override fun createViewBinding(parent: ViewGroup, viewType: Int): ItemTestBinding {
+        return ItemTestBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    }
 
     override fun onBindViewHolder(binding: ItemTestBinding, viewType: Int, position: Int, item: TestViewItem, payloads: MutableList<Any>) {
         super.onBindViewHolder(binding, viewType, position, item, payloads)

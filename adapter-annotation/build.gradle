@@ -5,7 +5,6 @@ plugins {
 
 apply from: "../dependencies.gradle"
 
-// Gộp cấu hình java tại đây
 java {
     sourceCompatibility = project.ext.javaVersion
     targetCompatibility = project.ext.javaVersion

@@ -1,5 +1,7 @@
 package com.tuanha.dapter
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.tuanha.adapter.ViewItemAdapter
 import com.tuanha.adapter.annotation.ItemAdapter
 import com.tuanha.adapter.entities.ViewItem
@@ -7,6 +9,14 @@ import com.tuanha.app.databinding.ItemTest2Binding
 
 @ItemAdapter
 class Test2Adapter : ViewItemAdapter<Test2ViewItem, ItemTest2Binding>() {
+
+    override val viewItemClass: Class<Test2ViewItem> by lazy {
+        Test2ViewItem::class.java
+    }
+
+    override fun createViewBinding(parent: ViewGroup, viewType: Int): ItemTest2Binding {
+        return ItemTest2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
+    }
 
     override fun onBindViewHolder(binding: ItemTest2Binding, viewType: Int, position: Int, item: Test2ViewItem, payloads: MutableList<Any>) {
         super.onBindViewHolder(binding, viewType, position, item, payloads)
